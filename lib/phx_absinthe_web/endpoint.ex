@@ -1,5 +1,6 @@
 defmodule PhxAbsintheWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :phx_absinthe
+  use Absinthe.Phoenix.Endpoint
 
   socket "/socket", PhxAbsintheWeb.UserSocket,
     websocket: true,

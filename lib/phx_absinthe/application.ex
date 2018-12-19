@@ -9,9 +9,14 @@ defmodule PhxAbsinthe.Application do
     # List all child processes to be supervised
     children = [
       # Start the endpoint when the application starts
-      PhxAbsintheWeb.Endpoint
+      PhxAbsintheWeb.Endpoint,
       # Starts a worker by calling: PhxAbsinthe.Worker.start_link(arg)
       # {PhxAbsinthe.Worker, arg},
+      %{
+        id: Absinthe.Subscription,
+        start: {Absinthe.Subscription.Supervisor, :start_link, [PhxAbsintheWeb.Endpoint]},
+        type: :supervisor
+      }
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
