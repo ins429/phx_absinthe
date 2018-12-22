@@ -6,8 +6,9 @@ defmodule PhxAbsintheWeb.Schema.Types do
     field(:field, :string)
   end
 
-  object :input do
-    field(:value, :string)
-    field(:target, :string)
+  object :chat_message do
+    field(:name, :string)
+    field(:channel, :string)
+    field(:message, :string)
   end
 end

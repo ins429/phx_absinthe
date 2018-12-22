@@ -20,32 +20,33 @@ defmodule PhxAbsintheWeb.Schema do
   end
 
   mutation do
-    field :submit_input, type: :input do
-      arg(:target, non_null(:string))
-      arg(:value, non_null(:string))
+    field :send_chat_message, type: :chat_message do
+      arg(:channel, non_null(:string))
+      arg(:name, non_null(:string))
+      arg(:message, non_null(:string))
 
-      resolve(fn _, %{target: target, value: value}, _ ->
-        {:ok, %{target: target, value: value}}
+      resolve(fn _, %{channel: channel, name: name, message: message}, _ ->
+        {:ok, %{channel: channel, name: name, message: message}}
       end)
     end
   end
 
   subscription do
-    field :input_changed, type: :input do
-      arg(:target, non_null(:string))
+    field :chat_message_added, type: :chat_message do
+      arg(:channel, non_null(:string))
 
       config(fn args, _ ->
-        {:ok, topic: args.target}
+        {:ok, topic: args.channel}
       end)
 
-      trigger(:submit_input,
-        topic: fn input ->
-          input.target
+      trigger(:send_chat_message,
+        topic: fn chat ->
+          chat.channel
         end
       )
 
-      resolve(fn input, _, _ ->
-        {:ok, input}
+      resolve(fn chat, _, _ ->
+        {:ok, chat}
       end)
     end
   end
