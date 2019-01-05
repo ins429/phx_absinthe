@@ -1,34 +1,39 @@
 defmodule PhxAbsinthe.Channels.Channels do
-  use GenServer
+  use Supervisior
 
-  @enforce_keys [:channels]
-  defstruct [:channels]
-
-  @impl true
-  def init(name) do
-    {:ok,
-     %__MODULE__{
-       channels: []
-     }}
+  def start_link(arg) do
+    Supervisor.start_link(__MODULE__, arg, name: __MODULE__)
   end
 
   @impl true
-  def handle_call({:find_by_name, name}, _from, state) do
-    {:reply, find_by_name(state, name), state}
+  def init(_arg) do
+    children = []
+
+    Supervisor.init(children, strategy: :one_for_one)
   end
 
-  @impl true
-  def handle_cast({:add_channel, name}, _from, state) do
-    {:reply, find_by_name(state, name), state}
+  def join(name) do
+    name
+    |> find()
+    |> case do
+      nil ->
+        create(name)
+
+      channel ->
+        {:ok, channel}
+    end
   end
 
-  defp find_by_name(%__MODULE__{channels: channels}, name) do
-    channels
-    |> Enum.find(&(&1.name == name))
+  def find(name) do
+    __MODULE__
+    |> Supervisor.which_children()
+    |> Enum.find(&(&1.id == name))
   end
 
-  defp find_by_id(%__MODULE__{channels: channels}, id) do
-    channels
-    |> Enum.find(&(&1.id == id))
+  defp create(name) do
+    Supervisor.start_child(__MODULE__, %{
+      start: {Channel, :start_link},
+      id: name
+    })
   end
 end

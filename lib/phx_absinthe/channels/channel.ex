@@ -4,6 +4,10 @@ defmodule PhxAbsinthe.Channels.Channel do
   @enforce_keys [:id, :name]
   defstruct [:id, :name, :messages, :participants]
 
+  def start_link(state) do
+    GenServer.start_link(__MODULE__, state, name: __MODULE__)
+  end
+
   @impl true
   def init(name) do
     {:ok,
@@ -14,15 +18,33 @@ defmodule PhxAbsinthe.Channels.Channel do
   end
 
   @impl true
+  def handle_call({:show, participant}, state) do
+    {:reply, state, state}
+  end
+
+  @impl true
+  def handle_call({:create_message, raw_message}, state) do
+    message = create_message(raw_message)
+
+    {:noreply, message, add_message(state, message)}
+  end
+
+  @impl true
   def handle_cast({:participant_joined, participant}, state) do
     {:reply, %{state | participants: [participant | state.participants]}}
   end
 
-  @impl true
-  def handle_cast({:receive_message, message}, state) do
-    {:noreply, %{state | messages: %{state | messages: [messages | message]}}}
+  defp add_message(state, message) do
+    %{
+      state
+      | messages: [state.messages | message]
+    }
   end
 
-  defp find_by_name(%__MODULE__{}) do
+  defp create_message(message) do
+    %Message{
+      message
+      | created_at: Datetime.utc_now()
+    }
   end
 end
