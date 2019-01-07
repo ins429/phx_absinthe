@@ -11,12 +11,39 @@ defmodule PhxAbsintheWeb.Schema do
   mutation do
     @desc "a participant joins a channel"
     field :join_channel, :channel do
-      arg(:name, non_null(:string))
+      arg(:channel_name, non_null(:string))
 
-      resolve(&Resolvers.Channels.join/3)
+      resolve(&Resolvers.Channel.join/2)
+    end
+
+    field :send_message, :message do
+      arg(:channel_name, non_null(:string))
+      arg(:message, non_null(:string))
+
+      # FIXME channel_name needs to be validated with current participant,
+      # whether the participant is in the channel
+
+      resolve(&Resolvers.Channel.send_message/2)
     end
   end
 
   subscription do
+    field :message_received, :message do
+      arg(:channel_name, non_null(:string))
+
+      config(fn args, _ ->
+        {:ok, args.channel_name}
+      end)
+
+      trigger(:send_message,
+        topic: fn message ->
+          message.channel_name
+        end
+      )
+
+      resolve(fn message, _, _ ->
+        {:ok, message}
+      end)
+    end
   end
 end

@@ -16,6 +16,11 @@ defmodule PhxAbsinthe.Application do
         id: Absinthe.Subscription,
         start: {Absinthe.Subscription.Supervisor, :start_link, [PhxAbsintheWeb.Endpoint]},
         type: :supervisor
+      },
+      %{
+        id: PhxAbsinthe.Channels,
+        start: {PhxAbsinthe.Channels, :start_link, []},
+        type: :supervisor
       }
     ]
 

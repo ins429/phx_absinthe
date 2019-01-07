@@ -1,39 +1,70 @@
-defmodule PhxAbsinthe.Channels.Channels do
-  use Supervisior
+defmodule PhxAbsinthe.Channels do
+  alias PhxAbsinthe.Channels.Channel
+  alias PhxAbsinthe.Channels.ChannelGenServer
 
-  def start_link(arg) do
-    Supervisor.start_link(__MODULE__, arg, name: __MODULE__)
+  use Supervisor
+
+  def start_link() do
+    Supervisor.start_link(__MODULE__, [], name: __MODULE__)
   end
 
   @impl true
-  def init(_arg) do
-    children = []
-
-    Supervisor.init(children, strategy: :one_for_one)
+  def init(_args) do
+    Supervisor.init([], strategy: :one_for_one)
   end
 
-  def join(name) do
+  def which_children do
+    __MODULE__
+    |> Supervisor.which_children()
+  end
+
+  def all do
+    which_children()
+    |> Enum.map(&elem(&1, 0))
+  end
+
+  def create(name) do
+    Supervisor.start_child(__MODULE__, %{
+      id: name,
+      start: {ChannelGenServer, :start_link, [name]}
+    })
+  end
+
+  def create_message(name, message) do
+    find_pid(name)
+    |> Channel.create_message(message)
+  end
+
+  def destroy(name) do
+    Supervisor.terminate_child(__MODULE__, name)
+    Supervisor.delete_child(__MODULE__, name)
+  end
+
+  def find(name) do
+    which_children()
+    |> Enum.find(&(elem(&1, 0) == name))
+  end
+
+  def join(pid, participant) when is_pid(pid), do: Channel.join(pid, participant)
+
+  def join(name, participant) do
     name
-    |> find()
+    |> find_pid()
     |> case do
       nil ->
         create(name)
 
-      channel ->
-        {:ok, channel}
+      pid ->
+        pid
     end
+    |> join(participant)
   end
 
-  def find(name) do
-    __MODULE__
-    |> Supervisor.which_children()
-    |> Enum.find(&(&1.id == name))
-  end
-
-  defp create(name) do
-    Supervisor.start_child(__MODULE__, %{
-      start: {Channel, :start_link},
-      id: name
-    })
+  defp find_pid(name) do
+    find(name)
+    |> case do
+      {_, id, _, _} -> id
+      nil -> nil
+    end
   end
 end
