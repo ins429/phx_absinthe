@@ -33,11 +33,12 @@ defmodule PhxAbsinthe.MixProject do
   defp deps do
     [
       {:absinthe, "~> 1.4"},
-      {:absinthe_plug, "~> 1.4.0"},
       {:absinthe_phoenix, "~> 1.4.0"},
+      {:absinthe_plug, "~> 1.4.0"},
       {:cors_plug, "~> 2.0"},
       {:elixir_uuid, "~> 1.2"},
       {:gettext, "~> 0.11"},
+      {:guardian, "~> 1.0"},
       {:jason, "~> 1.0"},
       {:phoenix, "~> 1.4.0"},
       {:phoenix_pubsub, "~> 1.1"},
