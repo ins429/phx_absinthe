@@ -1,4 +1,4 @@
-defmodule PhxAbsintheWeb.Resolvers.Channel do
+defmodule PhxAbsinthe.Resolvers.Channel do
   alias PhxAbsinthe.Channels
   alias PhxAbsinthe.Channels.Channel
 

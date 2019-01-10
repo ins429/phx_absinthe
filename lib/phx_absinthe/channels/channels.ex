@@ -30,9 +30,9 @@ defmodule PhxAbsinthe.Channels do
     })
   end
 
-  def create_message(name, message) do
+  def create_message(name, raw_message) do
     find_pid(name)
-    |> Channel.create_message(message)
+    |> GenServer.call({:create, raw_message})
   end
 
   def destroy(name) do
@@ -45,7 +45,7 @@ defmodule PhxAbsinthe.Channels do
     |> Enum.find(&(elem(&1, 0) == name))
   end
 
-  def join(pid, participant) when is_pid(pid), do: Channel.join(pid, participant)
+  def join(pid, participant) when is_pid(pid), do: GenServer.call({:join, participant})
 
   def join(name, participant) do
     name

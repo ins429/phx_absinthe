@@ -21,6 +21,11 @@ defmodule PhxAbsinthe.Application do
         id: PhxAbsinthe.Channels,
         start: {PhxAbsinthe.Channels, :start_link, []},
         type: :supervisor
+      },
+      %{
+        id: PhxAbsinthe.Participants,
+        start: {PhxAbsinthe.Participants, :start_link, []},
+        type: :supervisor
       }
     ]
 

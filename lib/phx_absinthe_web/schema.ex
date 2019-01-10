@@ -6,6 +6,9 @@ defmodule PhxAbsintheWeb.Schema do
   import_types(PhxAbsintheWeb.Schema.Types)
 
   query do
+    field :session, :string do
+      resolve(&Resolvers.Session.get_session/2)
+    end
   end
 
   mutation do

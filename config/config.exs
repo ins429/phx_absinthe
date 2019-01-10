@@ -22,10 +22,10 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-config :guardian, Guardian,
+config :phx_absinthe, PhxAbsinthe.Guardian,
   issuer: "PhxAbsinthe",
-  verify_issuer: true,
-  serializer: PhxAbsinthe.GuardianSerializer
+  secret_key: "secret_garden",
+  error_handler: PhxAbsinthe.Guardian.ErrorHandler
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
