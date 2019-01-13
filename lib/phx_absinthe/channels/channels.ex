@@ -28,6 +28,20 @@ defmodule PhxAbsinthe.Channels do
       id: name,
       start: {ChannelGenServer, :start_link, [name]}
     })
+    |> case do
+      {:ok, pid} ->
+        pid
+
+      {:ok, pid, _} ->
+        pid
+
+      {:error, {:already_started, pid}} ->
+        pid
+
+      result ->
+        IO.puts("unexpected result from Channels.create/1: #{inspect(result)}")
+        result
+    end
   end
 
   def create_message(name, raw_message) do
@@ -45,7 +59,7 @@ defmodule PhxAbsinthe.Channels do
     |> Enum.find(&(elem(&1, 0) == name))
   end
 
-  def join(pid, participant) when is_pid(pid), do: GenServer.call({:join, participant})
+  def join(pid, participant) when is_pid(pid), do: GenServer.call(pid, {:join, participant})
 
   def join(name, participant) do
     name

@@ -2,7 +2,7 @@ defmodule PhxAbsinthe.Resolvers.Channel do
   alias PhxAbsinthe.Channels
   alias PhxAbsinthe.Channels.Channel
 
-  def join(%{channel_name: channel_name}, %{participant: participant}) do
+  def join(%{channel_name: channel_name}, %{context: %{viewer: participant}}) do
     Channels.join(channel_name, participant)
   end
 

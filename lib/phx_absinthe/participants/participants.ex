@@ -27,20 +27,28 @@ defmodule PhxAbsinthe.Participants do
 
     Supervisor.start_child(__MODULE__, %{
       id: id,
-      start: {Participant, :start_link, [{id, name}]}
+      start: {Participant, :start_link, [{id, name}]},
+      restart: :transient
     })
 
     {:ok, id}
   end
 
-  def destroy(name) do
-    Supervisor.terminate_child(__MODULE__, name)
-    Supervisor.delete_child(__MODULE__, name)
+  def destroy(child_id) do
+    Supervisor.terminate_child(__MODULE__, child_id)
+    Supervisor.delete_child(__MODULE__, child_id)
+  end
+
+  def delete_child(child_id) do
+    Supervisor.delete_child(__MODULE__, child_id)
   end
 
   def get(id) do
     find_pid(id)
-    |> GenServer.call(:get)
+    |> case do
+      nil -> nil
+      pid -> GenServer.call(pid, :get)
+    end
   end
 
   def find(id) do

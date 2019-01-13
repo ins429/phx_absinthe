@@ -9,7 +9,8 @@ defmodule PhxAbsintheWeb.Plug.GraphQL do
     conn
     |> put_private(:absinthe, %{
       context: %{
-        viewer: Guardian.Plug.current_resource(conn)
+        viewer: Guardian.Plug.current_resource(conn),
+        current_token: Guardian.Plug.current_token(conn)
       }
     })
   end
