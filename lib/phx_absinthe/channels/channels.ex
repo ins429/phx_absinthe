@@ -61,7 +61,7 @@ defmodule PhxAbsinthe.Channels do
 
   def join(pid, participant) when is_pid(pid), do: GenServer.call(pid, {:join, participant})
 
-  def join(name, participant) do
+  def join(name, participant) when is_bitstring(name) do
     name
     |> find_pid()
     |> case do
