@@ -24,6 +24,8 @@ defmodule PhxAbsinthe.Channels do
   end
 
   def create(name) do
+    IO.puts("create name: #{name}")
+
     Supervisor.start_child(__MODULE__, %{
       id: name,
       start: {ChannelGenServer, :start_link, [name]}

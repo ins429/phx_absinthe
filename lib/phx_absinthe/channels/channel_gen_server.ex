@@ -5,7 +5,7 @@ defmodule PhxAbsinthe.Channels.ChannelGenServer do
   use GenServer
 
   def start_link(state) do
-    GenServer.start_link(__MODULE__, state, name: __MODULE__)
+    GenServer.start_link(__MODULE__, state)
   end
 
   @impl true
@@ -15,7 +15,9 @@ defmodule PhxAbsinthe.Channels.ChannelGenServer do
     {:ok,
      %Channel{
        id: UUID.uuid1(),
-       name: name
+       name: name,
+       messages: [],
+       participants: []
      }}
   end
 
