@@ -23,9 +23,9 @@ defmodule PhxAbsinthe.Channels.ChannelGenServer do
 
   @impl true
   def handle_call({:create_message, raw_message}, _from, state) do
-    message = create_message(raw_message)
+    message = create_message(raw_message, state)
 
-    {:reply, message, create_message(state, message)}
+    {:reply, message, %{state | messages: [message | state.messages]}}
   end
 
   @impl true
@@ -44,17 +44,12 @@ defmodule PhxAbsinthe.Channels.ChannelGenServer do
     {:stop, :normal, state}
   end
 
-  defp create_message(state, message) do
-    %{
-      state
-      | messages: [state.messages | message]
-    }
-  end
-
-  defp create_message(message) do
+  defp create_message(message, %{name: name}) do
     %Message{
-      message
-      | created_at: DateTime.utc_now()
+      struct(Message, message)
+      | created_at: DateTime.utc_now(),
+        id: UUID.uuid4(),
+        channel_name: name
     }
   end
 

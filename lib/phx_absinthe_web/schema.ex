@@ -20,8 +20,8 @@ defmodule PhxAbsintheWeb.Schema do
     end
 
     field :send_message, :message do
-      arg(:channel_name, non_null(:string))
       arg(:message, non_null(:string))
+      arg(:channel_name, non_null(:string))
 
       # FIXME channel_name needs to be validated with current participant,
       # whether the participant is in the channel
@@ -35,7 +35,7 @@ defmodule PhxAbsintheWeb.Schema do
       arg(:channel_name, non_null(:string))
 
       config(fn args, _ ->
-        {:ok, args.channel_name}
+        {:ok, topic: args.channel_name}
       end)
 
       trigger(:send_message,
