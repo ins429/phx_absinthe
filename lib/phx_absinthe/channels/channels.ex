@@ -45,13 +45,10 @@ defmodule PhxAbsinthe.Channels do
   end
 
   def create_message(name, raw_message) do
-    IO.puts("here wat")
-
     result =
       find_pid(name)
       |> GenServer.call({:create_message, raw_message})
 
-    IO.puts("here #{inspect(result)}")
     result
   end
 
@@ -63,6 +60,14 @@ defmodule PhxAbsinthe.Channels do
   def find(name) do
     which_children()
     |> Enum.find(&(elem(&1, 0) == name))
+  end
+
+  def get(id) do
+    find_pid(id)
+    |> case do
+      nil -> nil
+      pid -> GenServer.call(pid, :get)
+    end
   end
 
   def join(pid, participant) when is_pid(pid), do: GenServer.call(pid, {:join, participant})

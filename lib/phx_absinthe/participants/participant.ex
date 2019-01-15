@@ -31,8 +31,14 @@ defmodule PhxAbsinthe.Participants.Participant do
   end
 
   @impl true
-  def handle_cast(:touch, state) do
-    {:noreply, %{state | last_active_at: DateTime.utc_now()}}
+  def handle_call(:touch, _from, state) do
+    new_state = %{state | last_active_at: now()}
+    {:noreply, new_state, new_state}
+  end
+
+  @impl true
+  def handle_cast({:set_name, name}, state) do
+    {:noreply, %{state | name: name, last_active_at: now()}}
   end
 
   @impl true
@@ -54,7 +60,7 @@ defmodule PhxAbsinthe.Participants.Participant do
     DateTime.utc_now()
     |> DateTime.diff(last_active_at)
     |> case do
-      diff when diff > 10 ->
+      diff when diff > 300 ->
         send(self(), :kill)
 
       _ ->
@@ -69,8 +75,11 @@ defmodule PhxAbsinthe.Participants.Participant do
   defp delete_spec_from_supervisor(id) do
     Task.start(fn ->
       Process.sleep(5000)
-      IO.puts("deleting #{id}")
       Participants.delete_child(id)
     end)
+  end
+
+  defp now do
+    DateTime.utc_now()
   end
 end

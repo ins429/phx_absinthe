@@ -6,13 +6,17 @@ defmodule PhxAbsinthe.Resolvers.Channel do
     {:ok, Channels.join(channel_name, participant)}
   end
 
+  def get(%{channel_name: channel_name}, %{context: %{viewer: participant}}) do
+    {:ok, Channels.get(channel_name)}
+  end
+
   def send_message(%{channel_name: channel_name, message: message}, %{
         context: %{viewer: participant}
       }) do
     {:ok,
      Channels.create_message(channel_name, %{
        message: message,
-       participant: participant
+       participant_id: participant.id
      })}
   end
 end

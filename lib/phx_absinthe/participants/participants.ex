@@ -51,9 +51,25 @@ defmodule PhxAbsinthe.Participants do
     end
   end
 
+  def update_name(id, name) do
+    find_pid(id)
+    |> case do
+      nil -> {:error, :not_found}
+      pid -> GenServer.cast(pid, {:set_name, name})
+    end
+  end
+
   def find(id) do
     which_children()
     |> Enum.find(&(elem(&1, 0) == id))
+  end
+
+  def touch(id) do
+    find_pid(id)
+    |> case do
+      nil -> nil
+      pid -> GenServer.call(pid, :touch)
+    end
   end
 
   defp find_pid(id) do

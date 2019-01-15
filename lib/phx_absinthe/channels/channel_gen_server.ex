@@ -35,6 +35,11 @@ defmodule PhxAbsinthe.Channels.ChannelGenServer do
     {:reply, new_state, new_state}
   end
 
+  @impl true
+  def handle_call(:get, _from, state) do
+    {:reply, state, state}
+  end
+
   def handle_info(:health_check, state) do
     check_health()
     {:noreply, state}

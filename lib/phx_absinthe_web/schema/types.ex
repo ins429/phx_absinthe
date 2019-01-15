@@ -1,5 +1,6 @@
 defmodule PhxAbsintheWeb.Schema.Types do
   alias PhxAbsinthe.Resolvers
+  alias PhxAbsinthe.Scalars
 
   use Absinthe.Schema.Notation
 
@@ -8,17 +9,18 @@ defmodule PhxAbsintheWeb.Schema.Types do
     parse(&Scalars.Timestamp.parse/1)
   end
 
-  object :message do
-    field(:id, :integer)
-    field(:message, :string)
-    field(:created_at, :timestamp)
-  end
-
   object :participant do
     field(:id, :integer)
     field(:name, :string)
     field(:created_at, :timestamp)
     field(:last_active_at, :timestamp)
+  end
+
+  object :message do
+    field(:id, :integer)
+    field(:message, :string)
+    field(:participant, :participant, resolve: &Resolvers.Message.get_participant/3)
+    field(:created_at, :timestamp)
   end
 
   object :channel do

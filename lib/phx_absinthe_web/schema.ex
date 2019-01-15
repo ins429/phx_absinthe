@@ -9,9 +9,23 @@ defmodule PhxAbsintheWeb.Schema do
     field :session, :string do
       resolve(&Resolvers.Session.get_session/2)
     end
+
+    field :participant, :participant do
+      resolve(&Resolvers.Participant.get/2)
+    end
+
+    field :channel, :channel do
+      arg(:channel_name, non_null(:string))
+
+      resolve(&Resolvers.Channel.get/2)
+    end
   end
 
   mutation do
+    #
+    # Channel
+    #
+
     @desc "a participant joins a channel"
     field :join_channel, :channel do
       arg(:channel_name, non_null(:string))
@@ -19,14 +33,31 @@ defmodule PhxAbsintheWeb.Schema do
       resolve(&Resolvers.Channel.join/2)
     end
 
+    @desc "a participant sends a message"
     field :send_message, :message do
       arg(:message, non_null(:string))
       arg(:channel_name, non_null(:string))
 
-      # FIXME channel_name needs to be validated with current participant,
+      # FIXME channel_name needs to be validated with the current participant,
       # whether the participant is in the channel
 
       resolve(&Resolvers.Channel.send_message/2)
+    end
+
+    #
+    # Participant
+    #
+
+    @desc "sets current participant name"
+    field :set_participant_name, :participant do
+      arg(:name, non_null(:string))
+
+      resolve(&Resolvers.Participant.set_name/2)
+    end
+
+    @desc "touches participant's last_active_at"
+    field :touch_participant, :participant do
+      resolve(&Resolvers.Participant.touch/2)
     end
   end
 
