@@ -1,9 +1,13 @@
 defmodule PhxAbsinthe.Participants.Participant do
-  alias PhxAbsinthe.Participants
-  alias PhxAbsinthe.Messages.Message
-  alias PhxAbsinthe.Channels.Channel
+  alias PhxAbsinthe.{
+    Channels,
+    Channels.Channel,
+    Messages.Message,
+    Participants
+  }
 
   use GenServer
+  import PhxAbsinthe.Helper
 
   @enforce_keys [:id, :name, :created_at, :last_active_at]
   defstruct [:id, :name, :created_at, :last_active_at]
@@ -25,6 +29,9 @@ defmodule PhxAbsinthe.Participants.Participant do
      }}
   end
 
+  #
+  # api
+  #
   @impl true
   def handle_call(:get, _from, state) do
     {:reply, state, state}
@@ -41,6 +48,9 @@ defmodule PhxAbsinthe.Participants.Participant do
     {:noreply, %{state | name: name, last_active_at: now()}}
   end
 
+  #
+  # health check
+  #
   @impl true
   def handle_info(:health_check, state) do
     check_health(state)
@@ -49,6 +59,7 @@ defmodule PhxAbsinthe.Participants.Participant do
 
   @impl true
   def handle_info(:kill, state) do
+    IO.puts("Participant##{state.id} conceals")
     {:stop, :normal, state}
   end
 
@@ -56,17 +67,38 @@ defmodule PhxAbsinthe.Participants.Participant do
     delete_spec_from_supervisor(id)
   end
 
-  defp check_health(%__MODULE__{last_active_at: last_active_at}) do
-    DateTime.utc_now()
-    |> DateTime.diff(last_active_at)
+  defp check_health(state) do
+    (is_active?(state) || belongs_to_channel?(state))
     |> case do
-      diff when diff > 300 ->
+      false ->
         send(self(), :kill)
 
-      _ ->
+      true ->
         schedule_health_check()
     end
   end
+
+  @doc "whether if a participant had activity within last 5 minutes"
+  @five_minutes 300
+  defp is_active?(%__MODULE__{last_active_at: last_active_at} = state) do
+    DateTime.utc_now()
+    |> DateTime.diff(last_active_at)
+    |> case do
+      diff when diff > @five_minutes ->
+        state
+
+      _ ->
+        false
+    end
+  end
+
+  defp belongs_to_channel?(%__MODULE__{id: id}) do
+    Channels.active_participant_ids()
+    |> Enum.find(&(&1 == id))
+    |> is_truthy()
+  end
+
+  defp belongs_to_channel?(_), do: false
 
   defp schedule_health_check do
     Process.send_after(self(), :health_check, 5 * 1000)
@@ -79,6 +111,9 @@ defmodule PhxAbsinthe.Participants.Participant do
     end)
   end
 
+  #
+  # utils
+  #
   defp now do
     DateTime.utc_now()
   end

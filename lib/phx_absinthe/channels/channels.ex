@@ -1,6 +1,5 @@
 defmodule PhxAbsinthe.Channels do
   alias PhxAbsinthe.Channels.Channel
-  alias PhxAbsinthe.Channels.ChannelGenServer
 
   use Supervisor
 
@@ -26,7 +25,7 @@ defmodule PhxAbsinthe.Channels do
   def create(name) do
     Supervisor.start_child(__MODULE__, %{
       id: name,
-      start: {ChannelGenServer, :start_link, [name]}
+      start: {Channel, :start_link, [name]}
     })
     |> case do
       {:ok, pid} ->
@@ -45,15 +44,16 @@ defmodule PhxAbsinthe.Channels do
   end
 
   def create_message(name, raw_message) do
-    result =
-      find_pid(name)
-      |> GenServer.call({:create_message, raw_message})
-
-    result
+    find_pid(name)
+    |> GenServer.call({:create_message, raw_message})
   end
 
   def destroy(name) do
     Supervisor.terminate_child(__MODULE__, name)
+    Supervisor.delete_child(__MODULE__, name)
+  end
+
+  def delete_child(name) do
     Supervisor.delete_child(__MODULE__, name)
   end
 
@@ -62,13 +62,16 @@ defmodule PhxAbsinthe.Channels do
     |> Enum.find(&(elem(&1, 0) == name))
   end
 
-  def get(id) do
-    find_pid(id)
-    |> case do
-      nil -> nil
-      pid -> GenServer.call(pid, :get)
-    end
+  def get(pid) when is_pid(pid) do
+    GenServer.call(pid, :get)
   end
+
+  def get(id) when is_binary(id) do
+    find_pid(id)
+    |> get()
+  end
+
+  def get(_), do: nil
 
   def join(pid, participant) when is_pid(pid), do: GenServer.call(pid, {:join, participant})
 
@@ -83,6 +86,14 @@ defmodule PhxAbsinthe.Channels do
         pid
     end
     |> join(participant)
+  end
+
+  def active_participant_ids do
+    which_children()
+    |> Enum.map(fn {_, id, _, _} -> get(id) end)
+    |> Enum.map(fn %{participant_ids: participant_ids} -> participant_ids end)
+    |> Enum.concat()
+    |> Enum.uniq()
   end
 
   defp find_pid(name) do

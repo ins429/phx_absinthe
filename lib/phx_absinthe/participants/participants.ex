@@ -22,6 +22,12 @@ defmodule PhxAbsinthe.Participants do
     |> Enum.map(&elem(&1, 0))
   end
 
+  def find_by_ids(ids) do
+    which_children()
+    |> Enum.map(&elem(&1, 0))
+    |> Enum.map(&get/1)
+  end
+
   def create(name \\ "Participant") do
     id = UUID.uuid4()
 

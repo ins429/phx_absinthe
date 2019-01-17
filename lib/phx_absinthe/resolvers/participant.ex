@@ -16,7 +16,7 @@ defmodule PhxAbsinthe.Resolvers.Participant do
     {:ok, Participants.touch(viewer.id)}
   end
 
-  def for_channel(%Channel{participants: participants}, b, c) do
-    {:ok, participants}
+  def for_channel(%Channel{participant_ids: participant_ids}, b, c) do
+    {:ok, Participants.find_by_ids(participant_ids)}
   end
 end
