@@ -32,7 +32,7 @@ defmodule PhxAbsintheWeb.Router do
     Guardian.Plug.current_resource(conn)
     |> case do
       nil ->
-        {:ok, id} = PhxAbsinthe.Participants.create("new_name")
+        {:ok, id} = PhxAbsinthe.Participants.create()
         {:ok, token, full_claims} = PhxAbsinthe.Guardian.encode_and_sign(id)
 
         key = Guardian.Plug.Pipeline.fetch_key(conn, [])

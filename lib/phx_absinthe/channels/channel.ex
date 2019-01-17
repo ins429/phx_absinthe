@@ -20,7 +20,7 @@ defmodule PhxAbsinthe.Channels.Channel do
 
     {:ok,
      %Channel{
-       id: UUID.uuid1(),
+       id: UUID.uuid4(),
        name: name,
        messages: [],
        participant_ids: []
