@@ -12,6 +12,12 @@ defmodule PhxAbsinthe.Resolvers.Participant do
     {:ok, %{viewer | name: name}}
   end
 
+  def set_avatar(%{avatar: avatar}, %{context: %{viewer: viewer}}) do
+    Participants.update_avatar(viewer.id, avatar)
+
+    {:ok, %{viewer | avatar: avatar}}
+  end
+
   def touch(_, %{context: %{viewer: viewer}}) do
     {:ok, Participants.touch(viewer.id)}
   end

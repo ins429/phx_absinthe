@@ -65,6 +65,14 @@ defmodule PhxAbsinthe.Participants do
     end
   end
 
+  def update_avatar(id, avatar_base64) do
+    find_pid(id)
+    |> case do
+      nil -> {:error, :not_found}
+      pid -> GenServer.cast(pid, {:set_avatar, avatar_base64})
+    end
+  end
+
   def find(id) do
     which_children()
     |> Enum.find(&(elem(&1, 0) == id))

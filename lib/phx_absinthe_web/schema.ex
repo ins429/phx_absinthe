@@ -55,6 +55,13 @@ defmodule PhxAbsintheWeb.Schema do
       resolve(&Resolvers.Participant.set_name/2)
     end
 
+    @desc "sets current participant avatar"
+    field :set_participant_avatar, :participant do
+      arg(:avatar, non_null(:string))
+
+      resolve(&Resolvers.Participant.set_avatar/2)
+    end
+
     @desc "touches participant's last_active_at"
     field :touch_participant, :participant do
       resolve(&Resolvers.Participant.touch/2)
@@ -62,6 +69,25 @@ defmodule PhxAbsintheWeb.Schema do
   end
 
   subscription do
+    field :participant_updated, :message do
+      arg(:participant_id, non_null(:string))
+
+      config(fn args, _ ->
+        {:ok, topic: args.participant_id}
+      end)
+
+      trigger(
+        :update_avatar,
+        topic: fn participant ->
+          participant.id
+        end
+      )
+
+      resolve(fn participant, _, _ ->
+        {:ok, participant}
+      end)
+    end
+
     field :message_received, :message do
       arg(:channel_name, non_null(:string))
 
@@ -69,7 +95,8 @@ defmodule PhxAbsintheWeb.Schema do
         {:ok, topic: args.channel_name}
       end)
 
-      trigger(:send_message,
+      trigger(
+        :send_message,
         topic: fn message ->
           message.channel_name
         end

@@ -12,6 +12,7 @@ defmodule PhxAbsintheWeb.Schema.Types do
   object :participant do
     field(:id, :integer)
     field(:name, :string)
+    field(:avatar, :string)
     field(:created_at, :timestamp)
     field(:last_active_at, :timestamp)
   end
