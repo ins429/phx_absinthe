@@ -1,6 +1,6 @@
 defmodule PhxAbsintheWeb.Schema.Types do
-  alias PhxAbsinthe.Resolvers
-  alias PhxAbsinthe.Scalars
+  alias PhxAbsintheWeb.Resolvers
+  alias PhxAbsintheWeb.Scalars
 
   use Absinthe.Schema.Notation
 
@@ -12,7 +12,7 @@ defmodule PhxAbsintheWeb.Schema.Types do
   object :participant do
     field(:id, :integer)
     field(:name, :string)
-    field(:avatar, :string)
+    field(:avatar, :string, resolve: &Resolvers.Avatar.get/3)
     field(:created_at, :timestamp)
     field(:last_active_at, :timestamp)
   end

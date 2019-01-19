@@ -1,4 +1,4 @@
-defmodule PhxAbsinthe.Scalars.Timestamp do
+defmodule PhxAbsintheWeb.Scalars.Timestamp do
   def serialize(%DateTime{} = timestamp), do: DateTime.to_iso8601(timestamp)
 
   def parse(%Absinthe.Blueprint.Input.String{value: value}) do

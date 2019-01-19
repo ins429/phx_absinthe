@@ -1,5 +1,6 @@
 defmodule PhxAbsinthe.Participants.Participant do
   alias PhxAbsinthe.{
+    Avatars,
     Channels,
     Channels.Channel,
     Messages.Message,
@@ -10,7 +11,7 @@ defmodule PhxAbsinthe.Participants.Participant do
   import PhxAbsinthe.Helper
 
   @enforce_keys [:id, :name, :created_at, :last_active_at]
-  defstruct [:id, :name, :created_at, :avatar, :last_active_at]
+  defstruct [:id, :name, :created_at, :avatar, :avatar_id, :last_active_at]
 
   def start_link({id, name}) do
     GenServer.start_link(__MODULE__, {id, name})
@@ -50,7 +51,9 @@ defmodule PhxAbsinthe.Participants.Participant do
 
   @impl true
   def handle_cast({:set_avatar, base64_avatar}, state) do
-    {:noreply, %{state | avatar: base64_avatar, last_active_at: now()}}
+    avatar_id = UUID.uuid4()
+    Avatars.put(avatar_id, base64_avatar)
+    {:noreply, %{state | avatar_id: avatar_id, last_active_at: now()}}
   end
 
   #

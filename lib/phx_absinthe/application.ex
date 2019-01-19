@@ -26,7 +26,8 @@ defmodule PhxAbsinthe.Application do
         id: PhxAbsinthe.Participants,
         start: {PhxAbsinthe.Participants, :start_link, []},
         type: :supervisor
-      }
+      },
+      {PhxAbsinthe.Avatars, %{}}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

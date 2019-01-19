@@ -1,7 +1,7 @@
 defmodule PhxAbsintheWeb.Schema do
   use Absinthe.Schema
 
-  alias PhxAbsinthe.Resolvers
+  alias PhxAbsintheWeb.Resolvers
 
   import_types(PhxAbsintheWeb.Schema.Types)
 
