@@ -37,6 +37,7 @@ defmodule PhxAbsinthe.MixProject do
       {:absinthe_plug, "~> 1.4.0"},
       {:cors_plug, "~> 2.0"},
       {:elixir_uuid, "~> 1.2"},
+      {:faker, "~> 0.11"},
       {:gettext, "~> 0.11"},
       {:guardian, "~> 1.1"},
       {:jason, "~> 1.0"},

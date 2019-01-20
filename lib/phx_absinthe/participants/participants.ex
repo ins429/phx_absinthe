@@ -28,7 +28,7 @@ defmodule PhxAbsinthe.Participants do
     |> Enum.map(&get/1)
   end
 
-  def create(name \\ UUID.uuid4()) do
+  def create(name \\ Faker.Superhero.En.name()) do
     id = UUID.uuid4()
 
     Supervisor.start_child(__MODULE__, %{

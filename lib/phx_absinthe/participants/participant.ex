@@ -93,7 +93,7 @@ defmodule PhxAbsinthe.Participants.Participant do
     |> DateTime.diff(last_active_at)
     |> case do
       diff when diff > @five_minutes ->
-        state
+        true
 
       _ ->
         false
